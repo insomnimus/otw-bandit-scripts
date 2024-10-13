@@ -150,7 +150,7 @@ function solve() {
 
 	local output
 	if [[ $lvl == 14 ]]; then
-		output="$(ssh -i "$bandit14_privkey" -p 2220 "bandit$lvl@bandit.labs.overthewire.org" "$script")"
+		output="$(ssh -i "$bandit14_privkey" -p 2220 "bandit$lvl@bandit.labs.overthewire.org" "$script" 2>&1)"
 	else
 		output="$(sshpass -p "$password" ssh -C -p 2220 "bandit$lvl@bandit.labs.overthewire.org" "$script" 2>&1)"
 	fi
@@ -190,14 +190,15 @@ for ((i = level; i > 0; i--)); do
 	fi
 done
 
+# set -x
 password=bandit0
 for ((i = 0; i <= level; i++)); do
 	if [[ $i == 13 ]]; then
 		if [[ $n_ssh != 0 ]]; then
 			sleep "$cooldown"
 		fi
-		((n_ssh++))
-		sshpass -p "$password" scp -P 2220 "bandit$i@bandit.labs.overthewire.org:sshkey.private" "$bandit14_privkey"
+		((n_ssh += 1))
+		sshpass -p "$password" scp -P 2220 "bandit$i@bandit.labs.overthewire.org:sshkey.private" "$bandit14_privkey" 2>/dev/null
 		chmod 0600 "$bandit14_privkey"
 		continue
 	fi
